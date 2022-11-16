@@ -1,47 +1,35 @@
-
 #include <Arduino.h>
 #include <Bounce2.h>
 #include <Goodwood.h>
 #include <Bypass.h>
 #include <EEPROM.h>
 
-void setup() {
+Bounce ftsw = Bounce();
 
-digitalWrite(ledA, !ledAState);
-digitalWrite(relayA, !relayAState);
-delay(50); 
-digitalWrite(ledA, ledAState);
-digitalWrite(relayA, relayAState);
+Bypass bypass;
+
+void setup() {
+  
+//  #ifdef __DEBUG__
+//      Serial.begin(9600);
+//  #endif 
+  pinMode(FTSW_PIN, INPUT_PULLUP);
+  ftsw.attach(FTSW_PIN);
+  ftsw.interval(40);
+
+  bypass.Init();
 
 }
 
 void loop(){
 
-int reading = digitalRead(switchAPin); 
+  ftsw.update();            // poll inputs every loop
 
-if (reading != lastSwitchAState) {
-
-  lastDebounceTime = millis(); 
+  if (ftsw.fell()) {
+    bypass.ToggleState();
+//    #ifdef __DEBUG__
+//        Serial.println("momentary footswitch fell");
+//    #endif
+  }
 }
 
-if ((millis() - lastDebounceTime) > debounceDelay) {
-
- if (reading != switchAPinState) {
-      switchAPinState = reading;
-
-      if (switchAPinState == LOW) {
-
-        ledAState = !ledAState; 
-        relayAState = !relayAState;   
-      }
-      }
-}
-  
-  digitalWrite(ledA, ledAState);
-  digitalWrite(relayA, relayAState);
-
-
-  lastSwitchAState = reading; 
-  
-
-}
