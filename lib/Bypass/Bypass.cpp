@@ -17,18 +17,18 @@ void Bypass::ToggleState(void) {
     _state = !_state;                   
     EEPROM.write(STATE_ADDRESS, _state);
     writeOutputs(_state);
-//    #ifdef __DEBUG__
-//        Serial.print("state: "); Serial.println(_state);
-//    #endif
+    #ifdef __DEBUG__
+        Serial.print("state: "); Serial.println(_state);
+    #endif
 }
 
  void Bypass::WriteState(bool value) {
     _state = value;
     EEPROM.write(STATE_ADDRESS, _state);
     writeOutputs(_state);
- //   #ifdef __DEBUG__
- //           Serial.print("state: "); Serial.println(_state);
- //   #endif
+    #ifdef __DEBUG__
+            Serial.print("state: "); Serial.println(_state);
+    #endif
 }
 
 /*!

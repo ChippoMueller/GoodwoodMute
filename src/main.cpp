@@ -10,9 +10,9 @@ Bypass bypass;
 
 void setup() {
   
-//  #ifdef __DEBUG__
-//      Serial.begin(9600);
-//  #endif 
+  #ifdef __DEBUG__
+      Serial.begin(9600);
+  #endif 
   pinMode(FTSW_PIN, INPUT_PULLUP);
   ftsw.attach(FTSW_PIN);
   ftsw.interval(40);
@@ -27,9 +27,9 @@ void loop(){
 
   if (ftsw.fell()) {
     bypass.ToggleState();
-//    #ifdef __DEBUG__
-//        Serial.println("momentary footswitch fell");
-//    #endif
+    #ifdef __DEBUG__
+        Serial.println("footswitch fell");
+    #endif
   }
 }
 
