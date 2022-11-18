@@ -7,6 +7,18 @@ void Bypass::Init(void) {
     _relay.Init();
     _led.Init();
     _state = EEPROM.read(STATE_ADDRESS);
+    if (_state > 1) _state = 1;
+    if (digitalRead(FTSW_PIN) == LOW) {
+        _state = !_state;
+    EEPROM.write(STATE_ADDRESS, _state);
+       
+        for (int flash = 1; flash <= 4; ++flash) {
+        _led.write(HIGH);
+        delay(50);
+        _led.write(LOW);
+        delay(50);
+        }
+    }
     writeOutputs(_state);
 }
 
@@ -14,21 +26,21 @@ void Bypass::Init(void) {
     @brief Toggles _state, stores the new _state value to the EEPROM, and writes the outputs.
 */
 void Bypass::ToggleState(void) {
-    _state = !_state;                   
-    EEPROM.write(STATE_ADDRESS, _state);
+    _state = !_state;                  
+//    EEPROM.write(STATE_ADDRESS, _state);
     writeOutputs(_state);
-    #ifdef __DEBUG__
-        Serial.print("state: "); Serial.println(_state);
-    #endif
+//    #ifdef __DEBUG__
+//        Serial.print("state: "); Serial.println(_state);
+//    #endif
 }
 
  void Bypass::WriteState(bool value) {
     _state = value;
-    EEPROM.write(STATE_ADDRESS, _state);
+//    EEPROM.write(STATE_ADDRESS, _state);
     writeOutputs(_state);
-    #ifdef __DEBUG__
-            Serial.print("state: "); Serial.println(_state);
-    #endif
+//    #ifdef __DEBUG__
+//            Serial.print("state: "); Serial.println(_state);
+//    #endif
 }
 
 /*!

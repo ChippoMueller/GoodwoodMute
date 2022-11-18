@@ -4,8 +4,8 @@
 #include <Arduino.h>
 
 // PIN MAP //
-// COUNTER-CLOCKWISE            // CLOCKWISE        PxXX    Physical Pin
-#define FTSW_PIN (10)            // (0)              PB00    2
+// COUNTER-CLOCKWISE           // CLOCKWISE        PxXX    Physical Pin
+#define FTSW_PIN (8)          // (0)              PB00    13
 #define RELAY_PIN (1)          // (9)              PB01    3
 #define LED_PIN (7)            // (3)              PA01    10
 
@@ -18,6 +18,6 @@ enum EepromAddresses : uint8_t {
   STATE_ADDRESS,
 };
 
- #define __DEBUG__   // comment out when not using Uno
+// #define __DEBUG__   // comment out when not using Uno
 
 #endif
