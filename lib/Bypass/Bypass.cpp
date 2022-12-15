@@ -34,6 +34,7 @@ void Bypass::Init(void) {
         delay(50);
         }
     }
+    
     if (_drystate == 0 && _masterstate == 0) {
         _leda.write(HIGH);
         _ledb.write(HIGH);
