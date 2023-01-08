@@ -53,7 +53,7 @@ void Bypass::ToggleState(void) {
     @param value the value to write.
 */
 void Bypass::writeOutputs(uint8_t value) {
-    // _relay.write(value);        // use for mini relays   
-    _relay.write(!value);    // use for large relays
+    _relay.write(value);        // use for mini relays   
+//    _relay.write(!value);    // use for large relays
     _led.write(value);                     
 }
