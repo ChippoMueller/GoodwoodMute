@@ -4,8 +4,7 @@
 #include <Bypass.h>
 #include <EEPROM.h>
 
-Bounce ftswa = Bounce();
-Bounce ftswb = Bounce();
+Bounce ftsw = Bounce();
 
 Bypass bypass;
 
@@ -14,13 +13,9 @@ void setup() {
 //  #ifdef __DEBUG__
 //      Serial.begin(9600);
 //  #endif 
-  pinMode(FTSWA_PIN, INPUT_PULLUP);
-  ftswa.attach(FTSWA_PIN);
-  ftswa.interval(40);
-
-  pinMode(FTSWB_PIN, INPUT_PULLUP);
-  ftswb.attach(FTSWB_PIN);
-  ftswb.interval(40);
+  pinMode(FTSW_PIN, INPUT_PULLUP);
+  ftsw.attach(FTSW_PIN);
+  ftsw.interval(40);
 
   bypass.Init();
 
@@ -28,21 +23,14 @@ void setup() {
 
 void loop(){
 
-  ftswa.update();            // poll inputs every loop
-  ftswb.update();            // poll inputs every loop
+  ftsw.update();            // poll inputs every loop
 
-  if (ftswa.fell()) {
-    bypass.ToggleDry1State();
+  if (ftsw.fell()) {
+    bypass.ToggleState();
   //  #ifdef __DEBUG__
   //      Serial.println("footswitch fell");
   //  #endif
   }
 
-  if (ftswb.fell()) {
-    bypass.ToggleDry2State();
-  //  #ifdef __DEBUG__
-  //      Serial.println("footswitch fell");
-  //  #endif
-  }
 }
 
