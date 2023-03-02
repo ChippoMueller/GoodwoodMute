@@ -10,14 +10,19 @@
 class Bypass {
   public:
   void Init(void);
-  void ToggleState(void);
-  void WriteState(bool value);
-  void writeOutputs(uint8_t value);
+  void ToggleABState(void);
+  void ToggleYState(void);
+  void writeRelayOutputs(uint8_t value);
+  void writeLedOutputs(uint8_t value);
 
   private:
-  RelaySwitch _relay = RelaySwitch(RELAY_PIN);
-  Led _led = Led(LED_PIN);
-  uint8_t _state = 1;                       // the master state variable
+  RelaySwitch _relayA = RelaySwitch(RELAYA_PIN);
+  RelaySwitch _relayB = RelaySwitch(RELAYB_PIN);
+  Led _ledA = Led(LEDA_PIN);
+  Led _ledB = Led(LEDB_PIN);
+  Led _ledC = Led(LEDC_PIN);
+  uint8_t _abstate = 0;                       // the master state variable
+  uint8_t _ystate = 0;                       // the master state variable
 };
 
 #endif
