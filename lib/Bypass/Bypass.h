@@ -9,10 +9,9 @@
 
 class Bypass {
   public:
-  void Init(void);
-  void ToggleMasterState(void);
-  void ToggleDryState(void);
-  void writeOutputs(uint8_t value);
+  void live();
+  void masterMute();
+  void dryMute();
 
   private:
   RelaySwitch _relaya = RelaySwitch(RELAYA_PIN);
@@ -20,8 +19,6 @@ class Bypass {
   Led _leda = Led(LEDA_PIN);
   Led _ledb = Led(LEDB_PIN);
   Led _ledc = Led(LEDC_PIN);
-  uint8_t _masterstate = 0;                       // the master state variable
-  uint8_t _drystate = 0;                          // the dry state variable
 };
 
 #endif

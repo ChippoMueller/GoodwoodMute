@@ -22,8 +22,6 @@ void setup() {
   ftswb.attach(FTSWB_PIN);
   ftswb.interval(40);
 
-  bypass.Init();
-
 }
 
 void loop(){
@@ -31,18 +29,22 @@ void loop(){
   ftswa.update();            // poll inputs every loop
   ftswb.update();
 
-  if (ftswa.fell()) {
-    bypass.ToggleMasterState();
+  if (ftswa.read() == LOW) {
+    bypass.masterMute();
 //    #ifdef __DEBUG__
 //        Serial.println("footswitch a fell");
 //    #endif
   }
 
-  if (ftswb.fell()) {
-    bypass.ToggleDryState();
+ else if (ftswb.read() == LOW) {
+    bypass.dryMute();
 //    #ifdef __DEBUG__
 //        Serial.println("footswitch b fell");
 //    #endif
   }
+
+else {
+  bypass.live();
+}
 }
 
