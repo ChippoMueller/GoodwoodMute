@@ -21,19 +21,6 @@ void Bypass::Init(void) {
         delay(50);
         }
     }
-    _drystate = EEPROM.read(DRY_STATE_ADDRESS);
-    if (_drystate > 1) _drystate = 1;
-    if (digitalRead(FTSWB_PIN) == LOW) {
-        _drystate = !_drystate;
-    EEPROM.write(DRY_STATE_ADDRESS, _drystate);
-       
-        for (int flash = 1; flash <= 4; ++flash) {
-        _ledb.write(HIGH);
-        delay(50);
-        _ledb.write(LOW);
-        delay(50);
-        }
-    }
     
     if (_drystate == 0 && _masterstate == 0) {
         _leda.write(HIGH);
@@ -60,6 +47,38 @@ void Bypass::Init(void) {
 
 }
 
+void Bypass::pressType() {
+    #define SHORT_PRESS_TIME 500 // 500 milliseconds
+    #define LONG_PRESS_TIME  3000 // 3000 milliseconds
+
+// Variables will change:
+int lastState = LOW;  // the previous state from the input pin
+int currentState;     // the current reading from the input pin
+unsigned long pressedTime  = 0;
+unsigned long releasedTime = 0;
+
+  // read the state of the switch/button:
+  currentState = digitalRead(FTSWA_PIN);
+
+  if (lastState == HIGH && currentState == LOW)       // button is pressed
+    pressedTime = millis();
+  else if (lastState == LOW && currentState == HIGH) { // button is released
+    releasedTime = millis();
+
+    long pressDuration = releasedTime - pressedTime;
+
+    if ( pressDuration < SHORT_PRESS_TIME ){
+      ToggleMasterState();
+    }
+
+    if ( pressDuration > LONG_PRESS_TIME ) {
+      ToggleDryState();
+      } 
+
+  // save the the last state
+  lastState = currentState;
+    }
+}
 /*!
     @brief Toggles _state, stores the new _state value to the EEPROM, and writes the outputs.
 */

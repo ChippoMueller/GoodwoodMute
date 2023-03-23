@@ -6,7 +6,6 @@
 // PIN MAP //
 // COUNTER-CLOCKWISE             // CLOCKWISE        PxXX    Physical Pin
 #define FTSWA_PIN (4)            // (9)              PB00    7
-#define FTSWB_PIN (3)            // (8)              PB00    6
 #define RELAYA_PIN (1)           // (12)             PB01    3
 #define RELAYB_PIN (0)           // (13)             PB01    2
 #define LEDA_PIN (9)             // (3)              PA01    12
@@ -17,7 +16,6 @@
 
 typedef enum inputs{
   FTSWA_INPUT,
-  FTSWB_INPUT
 } Input_t;
 
 enum EepromAddresses : uint8_t {

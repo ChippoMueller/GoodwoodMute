@@ -12,6 +12,7 @@ class Bypass {
   void Init(void);
   void ToggleMasterState(void);
   void ToggleDryState(void);
+  void pressType();
   void writeOutputs(uint8_t value);
 
   private:
