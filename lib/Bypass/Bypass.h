@@ -14,6 +14,7 @@ class Bypass {
   void ToggleDryState(void);
   void pressType();
   void writeOutputs(uint8_t value);
+  byte readButton(byte i, int retrigger, long holdDur);
 
   private:
   RelaySwitch _relaya = RelaySwitch(RELAYA_PIN);

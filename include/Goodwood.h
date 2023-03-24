@@ -5,7 +5,7 @@
 
 // PIN MAP //
 // COUNTER-CLOCKWISE             // CLOCKWISE        PxXX    Physical Pin
-#define FTSWA_PIN (4)            // (9)              PB00    7
+#define FTSWA_PIN (3)            // (9)              PB00    7
 #define RELAYA_PIN (1)           // (12)             PB01    3
 #define RELAYB_PIN (0)           // (13)             PB01    2
 #define LEDA_PIN (9)             // (3)              PA01    12

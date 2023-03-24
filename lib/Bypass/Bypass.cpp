@@ -1,4 +1,5 @@
 #include <Bypass.h>
+
 /*!
     @brief Initialises the relay and led.
     Loads the previous _state from EEPROM.
@@ -46,39 +47,6 @@ void Bypass::Init(void) {
     writeOutputs(_drystate);
 
 }
-
-void Bypass::pressType() {
-    #define SHORT_PRESS_TIME 500 // 500 milliseconds
-    #define LONG_PRESS_TIME  3000 // 3000 milliseconds
-
-// Variables will change:
-int lastState = LOW;  // the previous state from the input pin
-int currentState;     // the current reading from the input pin
-unsigned long pressedTime  = 0;
-unsigned long releasedTime = 0;
-
-  // read the state of the switch/button:
-  currentState = digitalRead(FTSWA_PIN);
-
-  if (lastState == HIGH && currentState == LOW)       // button is pressed
-    pressedTime = millis();
-  else if (lastState == LOW && currentState == HIGH) { // button is released
-    releasedTime = millis();
-
-    long pressDuration = releasedTime - pressedTime;
-
-    if ( pressDuration < SHORT_PRESS_TIME ){
-      ToggleMasterState();
-    }
-
-    if ( pressDuration > LONG_PRESS_TIME ) {
-      ToggleDryState();
-      } 
-
-  // save the the last state
-  lastState = currentState;
-    }
-}
 /*!
     @brief Toggles _state, stores the new _state value to the EEPROM, and writes the outputs.
 */
@@ -112,7 +80,7 @@ void Bypass::writeOutputs(uint8_t value) {
         _relaya.write(HIGH);     // Mini relays
         _relayb.write(HIGH);     // Mini relays
         _leda.write(HIGH);
-        _ledb.write(LOW);
+//        _ledb.write(LOW);
     } 
 
     if (_masterstate == 0) {
@@ -121,7 +89,7 @@ void Bypass::writeOutputs(uint8_t value) {
         _relaya.write(LOW);     // Mini relays
         _relayb.write(LOW);     // Mini relays
         _leda.write(LOW);
-        _ledb.write(LOW);
+//        _ledb.write(LOW);
     } 
 
     if (_drystate == 1) {
