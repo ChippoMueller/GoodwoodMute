@@ -12,8 +12,6 @@
 #define LEDB_PIN (8)             // (4)              PA01    11
 #define LEDC_PIN (7)             // (5)              PA01    10
 
-
-
 typedef enum inputs{
   FTSWA_INPUT,
 } Input_t;
