@@ -4,45 +4,36 @@
     Loads the previous _state from EEPROM.
 */
 void Bypass::Init(void) {
+    int _buttonState = digitalRead(FTSWA_PIN);
+    bool _setupState = 0;
     _relaya.Init();
     _relayb.Init();
     _leda.Init();
     _ledb.Init();
     _masterstate = EEPROM.read(MASTER_STATE_ADDRESS);
     if (_masterstate > 1) _masterstate = 1;
-    if (digitalRead(FTSWA_PIN) == LOW) {
-        _masterstate = !_masterstate;
-    EEPROM.write(MASTER_STATE_ADDRESS, _masterstate);
-       
-        for (int flash = 1; flash <= 4; ++flash) {
-        _leda.write(HIGH);
-        delay(50);
-        _leda.write(LOW);
-        delay(50);
+
+        while (_buttonState == LOW){
+            _setupState = 1;
+            setupFlash();
+            _buttonState = digitalRead(FTSWA_PIN);
         }
-    }
     
-    if (_masterstate == 0) {
-        _leda.write(HIGH);
+    if (_setupState == 1){
+        _masterstate = !_masterstate;
+        EEPROM.write(MASTER_STATE_ADDRESS, _masterstate);
+    } else {
+        _leda.write(1);
         delay(50);
-        _leda.write(LOW);
-    }
-/*
-    else if (_masterstate == 1 && _drystate == 0) {
-        _leda.write(HIGH);
-        delay(50);
-        _leda.write(LOW);
-    }
+        _leda.write(0);
+        }
 
-    else if (_masterstate == 0 && _drystate == 1) {
-        _ledb.write(HIGH);
-        delay(50);
-        _ledb.write(LOW);
-    }
-    */
+    #ifdef __DEBUG__
+      Serial.print("Boot Master: "); Serial.print(_masterstate); Serial.print(" ");
+      Serial.print("Setup: "); Serial.println(_setupState);
+    #endif
+
     writeOutputs(_masterstate);
-    writeOutputs(_drystate);
-
 }
 /*!
     @brief Toggles _state, stores the new _state value to the EEPROM, and writes the outputs.
@@ -62,62 +53,27 @@ void Bypass::ToggleMasterState(void) {
     @param value the value to write.
 */
 void Bypass::writeOutputs(uint8_t value) { 
-/*
-    if (_masterstate == 1) {
-        _relaya.write(_masterstate);     // Mini relays
-        _relayb.write(_masterstate);     // Mini relays
-        _leda.write(_masterstate);
-    } 
-
-    if (_masterstate == 0) {
-        _relaya.write(_masterstate);     // Mini relays
-        _relayb.write(_masterstate);     // Mini relays
-        _leda.write(_masterstate);
-    } 
-
-    if (_drystate == 1) {
-        _ledb.write(_drystate);
-   } 
-
-    if (_drystate == 0) {
-        _ledb.write(_drystate);
-    } 
-
-    if (_masterstate == 0 && _drystate == 1) {
-        _relayb.write(_drystate);      // Mini relays
-        _ledb.write(_drystate);
-    } 
-
-    if (_masterstate == 0 && _drystate == 0) {
-        _relayb.write(_drystate);      // Mini relays
-        _ledb.write(_drystate);
-    } 
-
-    if (_masterstate == 1 && _drystate == 1)
-        policeLights();
-    }
-    */
 
    if (_masterstate == 1) {
         if (_drystate == 1) {
-            _relayAState = 0;
-            _relayBState = 0;
+            _relayAState = 1;
+            _relayBState = 1;
             policeLights();
             } else {
-                _relayAState = 0;
-                _relayBState = 0;
+                _relayAState = 1;
+                _relayBState = 1;
                 _ledAState = 1;
                 _ledBState = 0;
             }
     } else {
         if (_drystate == 1) {
-            _relayAState = 1;
-            _relayBState = 0;
+            _relayAState = 0;
+            _relayBState = 1;
             _ledAState = 0;
             _ledBState = 1;
         } else {
-            _relayAState = 1;
-            _relayBState = 1;
+            _relayAState = 0;
+            _relayBState = 0;
             _ledAState = 0;
             _ledBState = 0;
         }
@@ -129,33 +85,52 @@ void Bypass::writeOutputs(uint8_t value) {
     _ledb.write(_ledBState);
 
     #ifdef __DEBUG__
-      Serial.print("Master: "); Serial.print(_masterstate); Serial.print(" ");
-      Serial.print("Dry: "); Serial.println(_drystate);
+      Serial.print("Master: "); Serial.print(_masterstate);
+      Serial.print(" Dry: "); Serial.println(_drystate);
     #endif
     
 }
 
  void Bypass::policeLights(){
     if (_masterstate == 1 && _drystate == 1){
- //   _ledAState = 1;
- //   _ledBState = 0;
 
     unsigned long currentMillis = millis();
 
-  if (currentMillis - previousMillis >= redInterval) {
+  if (currentMillis - _previousMillis >= _interval) {
     // save the last time you blinked the LED
-    previousMillis = currentMillis;
+    _previousMillis = currentMillis;
 
     // if the LED is off turn it on and vice-versa:
     if (_ledAState == 0) {
       _ledAState = 1;
       _ledBState = 0;
+      _interval = _redInterval;
     } else {
       _ledAState = 0;
       _ledBState = 1;
+      _interval = _blueInterval;
     }
   }
   }
     _leda.write(_ledAState);
     _ledb.write(_ledBState);
+}
+
+void Bypass::setupFlash(){
+    unsigned long currentMillis = millis();
+
+  if (currentMillis - _previousMillis >= _setupInterval) {
+    // save the last time you blinked the LED
+    _previousMillis = currentMillis;
+
+    // if the LED is off turn it on and vice-versa:
+    if (_ledAState == 0) {
+      _ledAState = 1;
+    } else {
+      _ledAState = 0;
+    }
+
+    // set the LED with the ledState of the variable:
+    _leda.write(_ledAState);
+  }
 }

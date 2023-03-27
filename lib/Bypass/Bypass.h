@@ -15,11 +15,9 @@ class Bypass {
   void pressType();
   void writeOutputs(uint8_t value);
   void policeLights();
+  void setupFlash();
   byte readButton(byte i, int retrigger, long holdDur);
-  unsigned long previousMillis = 0;
-  const long redInterval = 1000;
-  const long blueInterval = 150;
-  bool flash = 0;
+  
 
   private:
   RelaySwitch _relaya = RelaySwitch(RELAYA_PIN);
@@ -35,8 +33,13 @@ class Bypass {
   bool _relayBState = 0;
   bool _ledAState = 0;
   bool _ledBState = 0;
-  const long _blinkInterval = 150;
-  const long _pauseInterval = 1000;
+  unsigned long _previousMillis = 0;
+  int _interval = _redInterval;
+  const long _redInterval = 2000;
+  const long _blueInterval = 150;
+  const long _setupInterval = 75;
+//  const long _blinkInterval = 150;
+//  const long _pauseInterval = 1000;
 };
 
 #endif

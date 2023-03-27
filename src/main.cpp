@@ -27,6 +27,8 @@ void setup() {
 
 
   bypass.Init();
+    // Read the button once and then throw away the result
+    byte fakeButton = readButton(0, 0, 500);    
 }
 
 void loop(){
