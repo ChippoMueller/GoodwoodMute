@@ -25,6 +25,9 @@ void Bypass::Init(void) {
         _led.write(LOW);
     }
     writeOutputs(_state);
+    #ifdef __DEBUG__
+        Serial.print("Init state: "); Serial.println(_state);
+    #endif
 }
 
 /*!
@@ -34,18 +37,18 @@ void Bypass::ToggleState(void) {
     _state = !_state;                  
 //    EEPROM.write(STATE_ADDRESS, _state);
     writeOutputs(_state);
-//    #ifdef __DEBUG__
-//        Serial.print("state: "); Serial.println(_state);
-//    #endif
+    #ifdef __DEBUG__
+        Serial.print("Toggle state: "); Serial.println(_state);
+    #endif
 }
 
  void Bypass::WriteState(bool value) {
     _state = value;
 //    EEPROM.write(STATE_ADDRESS, _state);
     writeOutputs(_state);
-//    #ifdef __DEBUG__
-//            Serial.print("state: "); Serial.println(_state);
-//    #endif
+    #ifdef __DEBUG__
+            Serial.print("Write value: "); Serial.println(value);
+    #endif
 }
 
 /*!
