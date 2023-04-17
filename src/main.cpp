@@ -1,93 +1,107 @@
 #include <Arduino.h>
 #include <Bounce2.h>
-#include <Goodwood.h>
-#include <Bypass.h>
 #include <EEPROM.h>
 
+ #define __DEBUG__   // comment out when not using Uno
+
+// define the input and output pins
+const int buttonPin = 8; // the pin for the tap tempo button
+const int ledPin = 7; // the pin for the LED indicator
+const int outputPin = 6; // the pin for the output signal
+
+// define variables for tap tempo
+unsigned long lastTapTime = 0; // the time of the last tap
+unsigned long tapInterval = 0; // the time between taps
+bool isTapping = false; // whether the user is currently tapping
+int tapCount = 0; // the number of taps
+
+// define variables for output signal
+unsigned long lastOutputTime = 0; // the time of the last output signal
+unsigned long outputInterval = 0; // the time between output signals
 
 Bounce ftsw = Bounce();
 
-byte holdArray[1] = {    // declare the "holdArray"
-  0,
-};
-
-Bypass bypass;
-
-byte readButton(byte i, int retrigger, long holdDur);
-
 void setup() {
+
+  pinMode(buttonPin, INPUT_PULLUP);
+  pinMode(ledPin, OUTPUT);
+  pinMode(outputPin, OUTPUT);
+
   
   #ifdef __DEBUG__
       Serial.begin(9600);
   #endif 
 
-  pinMode(FTSWA_PIN, INPUT_PULLUP);
-  ftsw.attach(FTSWA_PIN);
+  pinMode(buttonPin, INPUT_PULLUP);
+  ftsw.attach(buttonPin);
   ftsw.interval(40);
-
-
-  bypass.Init();
-    // Read the button once and then throw away the result
-    byte fakeButton = readButton(0, 0, 500);    
 }
 
 void loop(){
 
-//  ftsw.update();            // poll inputs every loop
-  byte bypassButton = readButton(0, 0, 2000); // sets up the bypassButton array (i, retrigger, 2000mS)
+  // read the state of the button
+  int buttonState = digitalRead(buttonPin);
 
-  if (bypassButton == 1) {                      // if the bypass button has been tapped
-    bypass.ToggleMasterState();
-  }
+  // check if the button is pressed
+  if (buttonState == LOW) {
+    if (!isTapping) {
+      // if this is the first tap, start the tap tempo
+      isTapping = true;
+      tapCount = 1;
+      digitalWrite(ledPin, HIGH);
+      lastTapTime = millis();
+    } else {
+      // if this is not the first tap, calculate the tap tempo
+      unsigned long tapTime = millis();
+      tapInterval = tapTime - lastTapTime;
+      lastTapTime = tapTime;
+      tapCount++;
 
-  if (bypassButton == 2) {                      // if the switch has been held for 2 seconds
-    bypass.ToggleDryState();
-  }
 
-  bypass.policeLights();
-}
+      // update the LED to indicate the number of taps
+      if (tapCount == 1) {
+//        digitalWrite(ledPin, HIGH);
+      } else if (tapCount == 2) {
+//        digitalWrite(ledPin, HIGH);
+//        delay(50);
+//       digitalWrite(ledPin, LOW);
+//        delay(50);
+//        digitalWrite(ledPin, HIGH);
+      } else if (tapCount == 3) {
+//        digitalWrite(ledPin, HIGH);
+//        delay(50);
+//        digitalWrite(ledPin, LOW);
+//        delay(50);
+//        digitalWrite(ledPin, HIGH);
+//        delay(50);
+//        digitalWrite(ledPin, LOW);
+//        delay(50);
+//        digitalWrite(ledPin, HIGH);
+      } else {
+//        digitalWrite(ledPin, HIGH);
+//        delay(50);
+//        digitalWrite(ledPin, LOW);
+      }
+    }
+  } else if (isTapping) {
+    // if the button is released, stop the tap tempo and start the output signal
+    isTapping = false;
+    digitalWrite(ledPin, LOW);
 
+    // calculate the output interval based on the tap tempo
+    outputInterval = tapInterval / 2;
 
-
-
-byte readButton(byte i, int retrigger, long holdDur) {
-
-  ftsw.update();                     //update debounced state
-
-  byte buttonState = 0;                   // setup the "buttonState" variable
-  
-
-  if (holdDur == 0) {                     // if the switch has been held for 0mS
-    if (ftsw.risingEdge()) {        // if the switch is let go
-
-      buttonState = 1;                    // the buttonState is 1
+    // output the signal
+    unsigned long outputTime = millis();
+    if ((outputTime - lastOutputTime) >= outputInterval) {
+      digitalWrite(ledPin, HIGH);
+      delayMicroseconds(1);
+      digitalWrite(ledPin, LOW);
+      lastOutputTime = outputTime;
     }
   }
 
-  else if (ftsw.read() == LOW && holdArray[i] == 0 && ftsw.duration() > holdDur ) {   // if the switch has been held for more than 2000mS
-
-    buttonState = 2;                     // the buttonState is 2
-
-    if (retrigger > 0) {                 // if retrigger is longer that 0mS
-      buttonState = 1;                   // the buttonState is 1
-      ftsw.interval(retrigger);     // return the updated state of the button
-    }
-
-    else holdArray[i] = 1;               // holdArray[i] is 1     
-  }
-
-  else if (ftsw.risingEdge() && holdArray[i] == 0) {   // if the switch has been pressed but not held
-
-    buttonState = 1;                    // write the button state to 1
-
-  }
-
-  if (ftsw.risingEdge() && holdArray[i] == 1) {    // if the switch has been pressed  and the hold array is 1
-
-    buttonState = 3;                                    // the button state is 3
-
-    holdArray[i] = 0;                                   // write the hold array low
-  }
-
-  return buttonState;                                   // the value is the button state
+      #ifdef __DEBUG__
+          Serial.print("isTapping: "); Serial.println(isTapping);
+      #endif
 }
