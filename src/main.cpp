@@ -1,107 +1,133 @@
 #include <Arduino.h>
 #include <Bounce2.h>
-#include <EEPROM.h>
 
- #define __DEBUG__   // comment out when not using Uno
+const int BUTTON_PIN = 8;
+const int LED_PIN = 7;
+const int SAMPLE_SIZE = 4;
 
-// define the input and output pins
-const int buttonPin = 8; // the pin for the tap tempo button
-const int ledPin = 7; // the pin for the LED indicator
-const int outputPin = 6; // the pin for the output signal
+int buttonState = HIGH;
+int lastButtonState = HIGH;
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 50;
+unsigned long pressTimes[SAMPLE_SIZE];
+int pressIndex = 0;
+float bpm = 0.0;
 
-// define variables for tap tempo
-unsigned long lastTapTime = 0; // the time of the last tap
-unsigned long tapInterval = 0; // the time between taps
-bool isTapping = false; // whether the user is currently tapping
-int tapCount = 0; // the number of taps
+unsigned long prevMillis = 0;
 
-// define variables for output signal
-unsigned long lastOutputTime = 0; // the time of the last output signal
-unsigned long outputInterval = 0; // the time between output signals
+unsigned long currMillis = 0;
+
+unsigned long interval = 0;
+
+ 
 
 Bounce ftsw = Bounce();
 
 void setup() {
 
-  pinMode(buttonPin, INPUT_PULLUP);
-  pinMode(ledPin, OUTPUT);
-  pinMode(outputPin, OUTPUT);
+  // Initialise the pressTimes Array with zero’s
 
-  
-  #ifdef __DEBUG__
-      Serial.begin(9600);
-  #endif 
+ for (int i = 0; i < SAMPLE_SIZE; i++) {                  
 
-  pinMode(buttonPin, INPUT_PULLUP);
-  ftsw.attach(buttonPin);
+           pressTimes[i] = 0;
+  }
+ 
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  pinMode(LED_PIN, OUTPUT);
+
+  ftsw.attach(BUTTON_PIN);
   ftsw.interval(40);
+
+  Serial.begin(9600);
+
 }
 
-void loop(){
+void loop() {
+  ftsw.update();
 
-  // read the state of the button
-  int buttonState = digitalRead(buttonPin);
+  int reading = ftsw.read();
 
-  // check if the button is pressed
-  if (buttonState == LOW) {
-    if (!isTapping) {
-      // if this is the first tap, start the tap tempo
-      isTapping = true;
-      tapCount = 1;
-      digitalWrite(ledPin, HIGH);
-      lastTapTime = millis();
-    } else {
-      // if this is not the first tap, calculate the tap tempo
-      unsigned long tapTime = millis();
-      tapInterval = tapTime - lastTapTime;
-      lastTapTime = tapTime;
-      tapCount++;
+//  if (reading != lastButtonState) {
+//    lastDebounceTime = millis();
+//  }
+
+  if (ftsw.fell()) {
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    if (reading != buttonState) {
+      buttonState = reading;
+
+      if (buttonState == LOW) {
+        // record the interval
+
+   currMillis = millis();
+
+   if ( prevMillis != 0 ) {
+
+         interval = currMillis - prevMillis;
+
+   }
+
+   prevMillis = currMillis;
+
+ 
+
+ if ( interval > 0 ) {                                                                               // avoid storing interval of zero first time through
+
+    pressTimes[pressIndex] = interval;
+    pressIndex = (pressIndex + 1) % SAMPLE_SIZE;
+
+ 
+
+         // This is wrong until the array is filled . i.e. the first three times through the loop
+
+         //      The 1st time through, the array will contain [interval, 0, 0, 0]
+
+         //             2nd  time [interval, interval, 0, 0]
+
+         //             3rd time [interval, interval, interval, 0] 
+
+      
+
+         // calculate the average BPM
+          unsigned long sum = 0;
+
+          int arrayElements = 0;
 
 
-      // update the LED to indicate the number of taps
-      if (tapCount == 1) {
-//        digitalWrite(ledPin, HIGH);
-      } else if (tapCount == 2) {
-//        digitalWrite(ledPin, HIGH);
-//        delay(50);
-//       digitalWrite(ledPin, LOW);
-//        delay(50);
-//        digitalWrite(ledPin, HIGH);
-      } else if (tapCount == 3) {
-//        digitalWrite(ledPin, HIGH);
-//        delay(50);
-//        digitalWrite(ledPin, LOW);
-//        delay(50);
-//        digitalWrite(ledPin, HIGH);
-//        delay(50);
-//        digitalWrite(ledPin, LOW);
-//        delay(50);
-//        digitalWrite(ledPin, HIGH);
-      } else {
-//        digitalWrite(ledPin, HIGH);
-//        delay(50);
-//        digitalWrite(ledPin, LOW);
-      }
+          for (int i = 0; i < SAMPLE_SIZE; i++) {
+      
+            if (pressTimes[i] != 0) {
+            
+                sum += pressTimes[i];
+
+                arrayElements ++;
+            }
+          }
+     
+           unsigned long avgPressTime = sum / arrayElements;
+
+           bpm = 60000.0 / avgPressTime;
+
+           Serial.print("BPM: ");           // love this, good boy!!!
+           Serial.println(bpm);
+          }
     }
-  } else if (isTapping) {
-    // if the button is released, stop the tap tempo and start the output signal
-    isTapping = false;
-    digitalWrite(ledPin, LOW);
 
-    // calculate the output interval based on the tap tempo
-    outputInterval = tapInterval / 2;
 
-    // output the signal
-    unsigned long outputTime = millis();
-    if ((outputTime - lastOutputTime) >= outputInterval) {
-      digitalWrite(ledPin, HIGH);
-      delayMicroseconds(1);
-      digitalWrite(ledPin, LOW);
-      lastOutputTime = outputTime;
+/*
+        // flash the LED at the calculated tempo
+        int interval = (int)(60.0 / bpm * 1000.0 / 2.0);
+        digitalWrite(LED_PIN, HIGH);
+        delay(interval);
+        digitalWrite(LED_PIN, LOW);
+        delay(interval);
+*/
+
     }
   }
 
-      #ifdef __DEBUG__
-          Serial.print("isTapping: "); Serial.println(isTapping);
-      #endif
+  lastButtonState = reading;
 }
