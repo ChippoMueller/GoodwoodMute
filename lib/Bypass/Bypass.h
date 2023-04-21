@@ -20,8 +20,8 @@ class Bypass {
   Led _leda = Led(LEDA_PIN);
   Led _ledb = Led(LEDB_PIN);
   Led _ledc = Led(LEDC_PIN);
-  uint8_t _masterstate = 0;                       // the master state variable
-  uint8_t _drystate = 0;                          // the dry state variable
+  bool _masterstate = 0;                       // the master state variable
+  bool _drystate = 0;                          // the dry state variable
 };
 
 #endif
