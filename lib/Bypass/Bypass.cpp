@@ -87,6 +87,31 @@ void Bypass::ToggleMasterState(void) {
 */
 void Bypass::writeOutputs(uint8_t value) { 
 
+    if (_masterstate == 1){
+        _relaya.write(1);
+        _relayb.write(1);
+        _leda.write(1);
+        
+        if (_drystate == 1){
+            _ledb.write(1);
+        } else {
+            _ledb.write(0);
+        }
+    } else {
+        _relaya.write(0);
+        _leda.write(0);
+        if (_drystate == 1){
+            _relayb.write(1);
+            _ledb.write(1);
+        } else {
+            _relayb.write(0);
+            _ledb.write(0);
+        }
+    }
+}
+
+
+/*
     if (_masterstate == 1) {
 //        _relaya.write(LOW);      // Big relays
 //        _relayb.write(LOW);      // Big relays
@@ -122,4 +147,4 @@ void Bypass::writeOutputs(uint8_t value) {
 //        _relayb.write(HIGH);      // Big relays
         _relayb.write(LOW);      // Mini relays
     } 
-}
+*/
