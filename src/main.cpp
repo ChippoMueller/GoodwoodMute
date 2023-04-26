@@ -116,6 +116,36 @@ void setup() {
 // the loop routine runs over and over again forever:
 void loop() {
 
+  if (dryMuteState == 1) {
+    if (dryMixState == 1) {
+      digitalWrite(red, 0);                             
+      digitalWrite(green, 0);
+      digitalWrite(blue, 1);
+      digitalWrite(dryPin, 0);
+      digitalWrite(wetPin, 0);
+    } else {
+      digitalWrite(red, 1);                             
+      digitalWrite(green, 0);
+      digitalWrite(blue, 0);
+      digitalWrite(dryPin, 0);
+      digitalWrite(wetPin, 0);
+    }
+  } else {
+    if (dryMixState == 1) {
+      digitalWrite(red, 0);                             // then all LEDs are off
+      digitalWrite(green, 0);
+      digitalWrite(blue, 0);
+      digitalWrite(dryPin, 1);
+      digitalWrite(wetPin, 1);
+    } else {
+      digitalWrite(red, 0);                             // then all LEDs are off
+      digitalWrite(green, 0);
+      digitalWrite(blue, 0);
+      digitalWrite(dryPin, 1);
+      digitalWrite(wetPin, 0);
+    }
+  }
+/*
   if (dryMuteState == 0 && dryMixState == 0) {                               // if the pedal IS NOT muted
     digitalWrite(red, 0);                             // then all LEDs are off
     digitalWrite(green, 0);
@@ -147,7 +177,7 @@ void loop() {
     digitalWrite(dryPin, 0);
     digitalWrite(wetPin, 0);
   }
-  
+  */
   byte bypassButton = readButton(0, 0, 2000); // sets up the bypassButton array (i, retrigger, 2000mS)
 
   if (bypassButton == 1) {                      // if the bypass button has been tapped
@@ -185,16 +215,16 @@ void hold() {
         digitalWrite(green, 0);
         digitalWrite(blue, 1); 
         delay(50);
-        digitalWrite(red, 0);
-        digitalWrite(green, 0);
+//        digitalWrite(red, 0);
+//        digitalWrite(green, 0);
         digitalWrite(blue, 0);
         delay(50);
-        digitalWrite(red, 0);
-        digitalWrite(green, 0);
+//        digitalWrite(red, 0);
+//        digitalWrite(green, 0);
         digitalWrite(blue, 1);
         delay(50);
-        digitalWrite(red, 0);
-        digitalWrite(green, 0);
+//        digitalWrite(red, 0);
+//        digitalWrite(green, 0);
         digitalWrite(blue, 0);
       }
       else {
@@ -203,16 +233,16 @@ void hold() {
         digitalWrite(blue, 0); 
         delay(50);
         digitalWrite(red, 0);
-        digitalWrite(green, 0);
-        digitalWrite(blue, 0);
+//        digitalWrite(green, 0);
+//        digitalWrite(blue, 0);
         delay(50);
         digitalWrite(red, 1);
-        digitalWrite(green, 0);
-        digitalWrite(blue, 0);
+//        digitalWrite(green, 0);
+//        digitalWrite(blue, 0);
         delay(50);
         digitalWrite(red, 0);
-        digitalWrite(green, 0);
-        digitalWrite(blue, 0);
+//        digitalWrite(green, 0);
+//        digitalWrite(blue, 0);
       }   
    }
 }
