@@ -8,19 +8,6 @@ void Bypass::Init(void) {
     _relayb.Init();
     _leda.Init();
     _ledb.Init();
-    _masterstate = EEPROM.read(MASTER_STATE_ADDRESS);
-    if (_masterstate > 1) _masterstate = 1;
-    if (digitalRead(FTSWA_PIN) == LOW) {
-        _masterstate = !_masterstate;
-    EEPROM.write(MASTER_STATE_ADDRESS, _masterstate);
-       
-        for (int flash = 1; flash <= 4; ++flash) {
-        _leda.write(HIGH);
-        delay(50);
-        _leda.write(LOW);
-        delay(50);
-        }
-    }
     _drystate = EEPROM.read(DRY_STATE_ADDRESS);
     if (_drystate > 1) _drystate = 1;
     if (digitalRead(FTSWB_PIN) == LOW) {
@@ -35,7 +22,7 @@ void Bypass::Init(void) {
         }
     }
     
-    if (_drystate == 0 && _masterstate == 0) {
+    if (_drystate == 0) {
         _leda.write(HIGH);
         _ledb.write(HIGH);
         delay(50);
@@ -43,19 +30,18 @@ void Bypass::Init(void) {
         _ledb.write(LOW);
     }
 
-    else if (_masterstate == 1 && _drystate == 0) {
+    else if (_drystate == 0) {
         _leda.write(HIGH);
         delay(50);
         _leda.write(LOW);
     }
 
-    else if (_masterstate == 0 && _drystate == 1) {
+    else if ( _drystate == 1) {
         _ledb.write(HIGH);
         delay(50);
         _ledb.write(LOW);
     }
     
-    writeOutputs(_masterstate);
     writeOutputs(_drystate);
 
 }
@@ -63,8 +49,17 @@ void Bypass::Init(void) {
 /*!
     @brief Toggles _state, stores the new _state value to the EEPROM, and writes the outputs.
 */
-void Bypass::ToggleMasterState(void) {
-    _masterstate = !_masterstate;                  
+void Bypass::Live(void) {
+    _masterstate = 1;                  
+//    EEPROM.write(STATE_ADDRESS, _state);
+    writeOutputs(_masterstate);
+//    #ifdef __DEBUG__
+//        Serial.print("master state: "); Serial.println(_masterstate);
+//    #endif
+}
+
+void Bypass::Mute(void) {
+    _masterstate = 0;                  
 //    EEPROM.write(STATE_ADDRESS, _state);
     writeOutputs(_masterstate);
 //    #ifdef __DEBUG__
@@ -91,60 +86,16 @@ void Bypass::writeOutputs(uint8_t value) {
         _relaya.write(1);
         _relayb.write(1);
         _leda.write(1);
-        
-        if (_drystate == 1){
-            _ledb.write(1);
-        } else {
-            _ledb.write(0);
-        }
     } else {
         _relaya.write(0);
-        _leda.write(0);
         if (_drystate == 1){
             _relayb.write(1);
+            _leda.write(0);
             _ledb.write(1);
         } else {
             _relayb.write(0);
+            _leda.write(0);
             _ledb.write(0);
         }
     }
 }
-
-
-/*
-    if (_masterstate == 1) {
-//        _relaya.write(LOW);      // Big relays
-//        _relayb.write(LOW);      // Big relays
-        _relaya.write(HIGH);     // Mini relays
-        _relayb.write(HIGH);     // Mini relays
-        _leda.write(HIGH);
-        _ledb.write(LOW);
-    } 
-
-    if (_masterstate == 0) {
-//        _relaya.write(HIGH);    // Big relays
-//        _relayb.write(HIGH);    // Big relays
-        _relaya.write(LOW);     // Mini relays
-        _relayb.write(LOW);     // Mini relays
-        _leda.write(LOW);
-        _ledb.write(LOW);
-    } 
-
-    if (_drystate == 1) {
-        _ledb.write(HIGH);
-    } 
-
-    if (_drystate == 0) {
-        _ledb.write(LOW);
-    } 
-
-    if (_masterstate == 0 && _drystate == 1) {
-//        _relayb.write(LOW);      // Big relays
-        _relayb.write(HIGH);      // Mini relays
-    } 
-
-    if (_masterstate == 0 && _drystate == 0) {
-//        _relayb.write(HIGH);      // Big relays
-        _relayb.write(LOW);      // Mini relays
-    } 
-*/
