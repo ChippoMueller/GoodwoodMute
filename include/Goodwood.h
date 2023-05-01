@@ -10,8 +10,8 @@
 #define RELAYA_PIN (1)           // (12)             PB01    3
 #define RELAYB_PIN (0)           // (13)             PB01    2
 #define LEDA_PIN (9)             // (3)              PA01    12
-#define LEDB_PIN (8)             // (4)              PA01    11
-#define LEDC_PIN (7)             // (5)              PA01    10
+#define LEDB_PIN (7)             // (4)              PA01    11
+#define LEDC_PIN (8)             // (5)              PA01    10
 
 
 

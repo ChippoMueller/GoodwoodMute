@@ -31,26 +31,15 @@ void loop(){
   toggle.update();            // poll inputs every loop
   rmt.update();
 
-  if (toggle.read() == HIGH) {
+  if (toggle.read() == LOW) {
     bypass.Live();
-    if (rmt.fell()) {
-    bypass.ToggleDryState();
-//    #ifdef __DEBUG__
-//        Serial.println("footswitch b fell");
-//    #endif
+    if (rmt.read() == HIGH) {
+    bypass.DryLive();
+  } else {
+    bypass.DryMute();
   }
-//    #ifdef __DEBUG__
-//        Serial.println("footswitch a fell");
-//    #endif
   } else {
     bypass.Mute();
-  }
-
-  if (ftswb.fell()) {
-    bypass.ToggleDryState();
-//    #ifdef __DEBUG__
-//        Serial.println("footswitch b fell");
-//    #endif
   }
 }
 
