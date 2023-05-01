@@ -9,3 +9,95 @@ in the development cycle.
 
 More information about PlatformIO Unit Testing:
 - https://docs.platformio.org/en/latest/advanced/unit-testing/index.html
+
+
+
+
+
+
+
+
+
+
+
+void loop() {
+  ftsw.update();
+
+  int reading = ftsw.read();
+
+//  if (reading != lastButtonState) {
+//    lastDebounceTime = millis();
+//  }
+
+  if (ftsw.fell()) {
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    if (reading != buttonState) {
+      buttonState = reading;
+
+      if (buttonState == LOW) {
+        // record the interval
+
+   currMillis = millis();
+
+   if ( prevMillis != 0 ) {
+
+         interval = currMillis - prevMillis;
+
+   }
+
+   prevMillis = currMillis;
+
+ 
+
+ if ( interval > 0 ) {                                                                               // avoid storing interval of zero first time through
+
+    pressTimes[pressIndex] = interval;
+    pressIndex = (pressIndex + 1) % SAMPLE_SIZE;
+
+ 
+
+         // This is wrong until the array is filled . i.e. the first three times through the loop
+
+         //      The 1st time through, the array will contain [interval, 0, 0, 0]
+
+         //             2nd  time [interval, interval, 0, 0]
+
+         //             3rd time [interval, interval, interval, 0] 
+
+      
+
+         // calculate the average BPM
+          unsigned long sum = 0;
+
+          int arrayElements = 0;
+
+
+          for (int i = 0; i < SAMPLE_SIZE; i++) {
+      
+            if (pressTimes[i] != 0) {
+            
+                sum += pressTimes[i];
+
+                arrayElements ++;
+            }
+          }
+     
+           unsigned long avgPressTime = sum / arrayElements;
+
+           bpm = 60000.0 / avgPressTime;
+
+           Serial.print("BPM: ");           // love this, good boy!!!
+           Serial.println(bpm);
+          }
+    }
+
+
+    }
+  }
+
+  lastButtonState = reading;
+}
+
