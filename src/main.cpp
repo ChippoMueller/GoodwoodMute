@@ -29,19 +29,12 @@ int pressIndex = 0;
 float bpm = 0.0;
 
 unsigned long prevMillis = 0;
-
 unsigned long currMillis = 0;
-
 unsigned long intervalStartMillis = 0;
 
-boolean flashIntervalStart = 0;                                                    // Controls when light goes on when blinking
-
- 
+bool flashIntervalStart = 0;                                                    // Controls when light goes on when blinking
 
 Bounce ftsw = Bounce();                                            // ftsw is an instance of a BOUNCE Object
-
-// ftsw ? footswitch ?
-
 
 void setup() {
 
@@ -53,7 +46,7 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
 
   ftsw.attach(BUTTON_PIN);                                // Attach the debouncer to a pin
-  ftsw.interval(40);                                                    // Use a debounce interval of 40 milliseconds
+  ftsw.interval(40);                                      // Use a debounce interval of 40 milliseconds
 
 }
 
@@ -71,7 +64,11 @@ ftsw.update();                                                   // Update the B
 
 int reading = ftsw.read();                                      // read the state of the footswitch (HIGH or LOW). Must include debounce time 40 milliseconds
 
-if (reading != lastButtonState) {                        // footswitch has changed state - reset lastDebounceTime
+//if (reading != lastButtonState) {                        // footswitch has changed state - reset lastDebounceTime
+//    lastDebounceTime = millis();
+//}
+
+if (ftsw.fell()) {                        // footswitch has changed state - reset lastDebounceTime
     lastDebounceTime = millis();
 }
 
@@ -87,24 +84,25 @@ if (flashInterval > 0) {
 
       if (flashIntervalStart == 1) {
 
-                 digitalWrite(LED_PIN, HIGH);                                                                        // Interval Start - Turn light on
+                 digitalWrite(LED_PIN, HIGH);              // Interval Start - Turn light on
 
                  flashIntervalStart = 0;
 
  
 
-      } else if (millis() == intervalStartMillis + LIGHT_ON_INTERVAL) {                   // lights been on long enough
+      } else if (millis() == intervalStartMillis + LIGHT_ON_INTERVAL) {     // lights been on long enough
 
-                 digitalWrite(LED_PIN, LOW);                                                                    // Turn light off
+                 digitalWrite(LED_PIN, LOW);            // Turn light off
 
      
 
-      } else if (millis() == intervalStartMillis + flashInterval) {                                 // interval complete repeat blinking
+      } else if (millis() == intervalStartMillis + flashInterval) {     // interval complete repeat blinking
 
                  intervalStartMillis = millis();
 
                  flashIntervalStart = 1;
-  }
+      }
+
 }
 
  
@@ -114,14 +112,12 @@ if (flashInterval > 0) {
  
 
   if ((millis() - lastDebounceTime) > debounceDelay) {            // a specified time has passed (50 milliseconds)
-    if (reading != buttonState) {                                                    // update last button state to current button state
+    if (reading != buttonState) {                                 // update last button state to current button state
      
 
       buttonState = reading;
 
-      if (buttonState == HIGH) {                                                     // current state is high so footswitch has been pressed
-
-                                                                                                                
+      if (buttonState == LOW) {                                                     // current state is high so footswitch has been pressed
 
            // calculate the interval between button presses and keep time button pressed
 
@@ -139,15 +135,11 @@ if (flashInterval > 0) {
 
                  flashIntervalStart = 1;                                                             // Start the flashing process, otherwise leave flashing as is
 
-                 Serial.println("Accepted interval: ");                                                      // Debugging
-
-                #ifdef __DEBUG__
-                      Serial.print("Accepted interval: "); 
-                #endif  
+                 Serial.print("Accepted interval: ");                                                      // Debugging
 
            }  else {
 
-                    Serial.println("Rejected interval too large: ");                          // Debugging
+                    Serial.print("Rejected interval too large: ");                          // Debugging
 
       }
 
@@ -157,27 +149,22 @@ if (flashInterval > 0) {
 
          
            Serial.print("BPM: ");                                                                        // Debugging - love this, good boy!!!
-           Serial.println(bpm);
-
- 
-
-      prevMillis = currMillis;          
+           Serial.println(bpm);       
 
     }   
-
+        prevMillis = currMillis;   
   }
 }
   lastButtonState = reading;
 
   }                                                           // finish Main Loop
-
 }
 
 
 
-
-
+// *****************************************************************************************
 /*
+
 #include <Arduino.h>
 #include <Bounce2.h>
 
