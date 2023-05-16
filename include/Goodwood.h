@@ -21,8 +21,8 @@ typedef enum inputs{
 } Input_t;
 
 enum EepromAddresses : uint8_t {
-  MASTER_STATE_ADDRESS,
-  DRY_STATE_ADDRESS,
+  CLEAN_STATE_ADDRESS,
+  FX_STATE_ADDRESS,
 };
 
 // #define __DEBUG__   // comment out when not using Uno

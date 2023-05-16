@@ -32,14 +32,14 @@ void loop(){
   ftswb.update();
 
   if (ftswa.fell()) {
-    bypass.ToggleMasterState();
+    bypass.ToggleCleanState();
 //    #ifdef __DEBUG__
 //        Serial.println("footswitch a fell");
 //    #endif
   }
 
   if (ftswb.fell()) {
-    bypass.ToggleDryState();
+    bypass.ToggleFxState();
 //    #ifdef __DEBUG__
 //        Serial.println("footswitch b fell");
 //    #endif
