@@ -4,8 +4,8 @@
 #include <Bypass.h>
 #include <EEPROM.h>
 
-Bounce ftswa = Bounce();
-Bounce ftswb = Bounce();
+Bounce ftsw = Bounce();
+Bounce toggle = Bounce();
 
 Bypass bypass;
 
@@ -14,13 +14,13 @@ void setup() {
 //  #ifdef __DEBUG__
 //      Serial.begin(9600);
 //  #endif 
-  pinMode(FTSWA_PIN, INPUT_PULLUP);
-  ftswa.attach(FTSWA_PIN);
-  ftswa.interval(40);
+  pinMode(FTSW_PIN, INPUT_PULLUP);
+  ftsw.attach(FTSW_PIN);
+  ftsw.interval(40);
 
-  pinMode(FTSWB_PIN, INPUT_PULLUP);
-  ftswb.attach(FTSWB_PIN);
-  ftswb.interval(40);
+  pinMode(TOGGLE_PIN, INPUT_PULLUP);
+  toggle.attach(TOGGLE_PIN);
+  toggle.interval(40);
 
   bypass.Init();
 
@@ -28,21 +28,20 @@ void setup() {
 
 void loop(){
 
-  ftswa.update();            // poll inputs every loop
-  ftswb.update();
+  ftsw.update();            // poll inputs every loop
+  toggle.update();
 
-  if (ftswa.fell()) {
-    bypass.ToggleMasterState();
+  if (ftsw.fell()) {
+    bypass.ToggleMuteState();
 //    #ifdef __DEBUG__
 //        Serial.println("footswitch a fell");
 //    #endif
   }
 
-  if (ftswb.fell()) {
-    bypass.ToggleDryState();
-//    #ifdef __DEBUG__
-//        Serial.println("footswitch b fell");
-//    #endif
+  if (toggle.read() == 1) {
+    bypass.Trails();
+  } else {
+    bypass.NoTrails();
   }
 }
 
