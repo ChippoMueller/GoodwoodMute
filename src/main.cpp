@@ -19,8 +19,8 @@ BOD Enabled 4.3V
 #include <EEPROM.h>
 
 const int spst = 4;  // momentary switch
-const int dryPin = 0;  // the mute relay pin
-const int wetPin = 1;   // the sum relay pin
+const int dryPin = 1;  // the mute relay pin
+const int wetPin = 0;   // the sum relay pin
 const int red = 9;  // the red LED pin
 const int green = 8;  // the green LED pin
 const int blue = 7; // the blue LED pin
@@ -116,27 +116,27 @@ void setup() {
 // the loop routine runs over and over again forever:
 void loop() {
 
-  if (dryMuteState == 1) {
-    if (dryMixState == 1) {
+  if (dryMixState == 1) {
+    if (dryMuteState == 1) {
       digitalWrite(red, 0);                             
       digitalWrite(green, 0);
       digitalWrite(blue, 1);
       digitalWrite(dryPin, 1);
       digitalWrite(wetPin, 1);
     } else {
-      digitalWrite(red, 1);                             
-      digitalWrite(green, 0);
-      digitalWrite(blue, 0);
-      digitalWrite(dryPin, 1);
-      digitalWrite(wetPin, 1);
-    }
-  } else {
-    if (dryMixState == 1) {
-      digitalWrite(red, 0);                             // then all LEDs are off
+      digitalWrite(red, 0);                             
       digitalWrite(green, 0);
       digitalWrite(blue, 0);
       digitalWrite(dryPin, 0);
       digitalWrite(wetPin, 0);
+    }
+  } else {
+    if (dryMuteState == 1) {
+      digitalWrite(red, 1);                             // then all LEDs are off
+      digitalWrite(green, 0);
+      digitalWrite(blue, 0);
+      digitalWrite(dryPin, 1);
+      digitalWrite(wetPin, 1);
     } else {
       digitalWrite(red, 0);                             // then all LEDs are off
       digitalWrite(green, 0);
@@ -145,39 +145,7 @@ void loop() {
       digitalWrite(wetPin, 1);
     }
   }
-/*
-  if (dryMuteState == 0 && dryMixState == 0) {                               // if the pedal IS NOT muted
-    digitalWrite(red, 0);                             // then all LEDs are off
-    digitalWrite(green, 0);
-    digitalWrite(blue, 0);
-    digitalWrite(dryPin, 1);
-    digitalWrite(wetPin, 1);
-  }
 
-  if (dryMuteState == 0 && dryMixState == 1) {                               // if the pedal IS NOT muted
-    digitalWrite(red, 0);                             // then all LEDs are off
-    digitalWrite(green, 0);
-    digitalWrite(blue, 0);
-    digitalWrite(dryPin, 1);
-    digitalWrite(wetPin, 0);
-  }
-
-  if (dryMuteState == 1 && dryMixState == 0) {                               // if the pedal IS muted
-    digitalWrite(red, 1);                             
-    digitalWrite(green, 0);
-    digitalWrite(blue, 0);
-    digitalWrite(dryPin, 0);
-    digitalWrite(wetPin, 0);
-  }
-
-  if (dryMuteState == 1 && dryMixState == 1) {                               // if the pedal IS muted
-    digitalWrite(red, 0);                             
-    digitalWrite(green, 0);
-    digitalWrite(blue, 1);
-    digitalWrite(dryPin, 0);
-    digitalWrite(wetPin, 0);
-  }
-  */
   byte bypassButton = readButton(0, 0, 2000); // sets up the bypassButton array (i, retrigger, 2000mS)
 
   if (bypassButton == 1) {                      // if the bypass button has been tapped
