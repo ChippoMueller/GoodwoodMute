@@ -9,7 +9,11 @@ void Bypass::Init(void) {
     _leda.Init();
     _ledb.Init();
     _cleanstate = EEPROM.read(CLEAN_STATE_ADDRESS);
+    _fxstate = EEPROM.read(FX_STATE_ADDRESS);
+
     if (_cleanstate > 1) _cleanstate = 1;
+    if (_fxstate > 1) _fxstate = 1;
+
     if (digitalRead(FTSWA_PIN) == LOW) {
         _cleanstate = !_cleanstate;
     EEPROM.write(CLEAN_STATE_ADDRESS, _cleanstate);
@@ -21,8 +25,7 @@ void Bypass::Init(void) {
         delay(50);
         }
     }
-    _fxstate = EEPROM.read(FX_STATE_ADDRESS);
-    if (_fxstate > 1) _fxstate = 1;
+    
     if (digitalRead(FTSWB_PIN) == LOW) {
         _fxstate = !_fxstate;
     EEPROM.write(FX_STATE_ADDRESS, _fxstate);
@@ -34,14 +37,24 @@ void Bypass::Init(void) {
         delay(50);
         }
     }
-    
-    if (_cleanstate == 0) {
+
+    if (_cleanstate == 0 && _fxstate == 0){
         _leda.write(HIGH);
+        _ledb.write(HIGH);
+        delay(50);
+        _leda.write(LOW);
+        _ledb.write(LOW);
+    }
+    
+    if (_cleanstate == 0 && _fxstate == 1) {
+        _leda.write(HIGH);
+        _ledb.write(HIGH);
         delay(50);
         _leda.write(LOW);
     }
 
-    if (_fxstate == 0) {
+    if (_fxstate == 0 && _cleanstate == 1) {
+        _leda.write(HIGH);
         _ledb.write(HIGH);
         delay(50);
         _ledb.write(LOW);
