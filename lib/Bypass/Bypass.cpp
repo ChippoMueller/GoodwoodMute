@@ -44,15 +44,15 @@ void Bypass::Init(void) {
     }
 
     else if (_masterstate == 1 && _drystate == 0) {
-        _leda.write(HIGH);
-        delay(50);
-        _leda.write(LOW);
-    }
-
-    else if (_masterstate == 0 && _drystate == 1) {
         _ledb.write(HIGH);
         delay(50);
         _ledb.write(LOW);
+    }
+
+    else if (_masterstate == 0 && _drystate == 1) {
+        _leda.write(HIGH);
+        delay(50);
+        _leda.write(LOW);
     }
     
     writeOutputs(_masterstate);
