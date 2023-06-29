@@ -9,9 +9,10 @@
 
 class Bypass {
   public:
-  void Init(void);
-  void ToggleMasterState(void);
-  void ToggleDryState(void);
+  void MagnetLive(void);
+  void MagnetMute(void);
+  void PiezoLive(void);
+  void PiezoMute(void);
   void writeOutputs(uint8_t value);
 
   private:
@@ -20,8 +21,8 @@ class Bypass {
   Led _leda = Led(LEDA_PIN);
   Led _ledb = Led(LEDB_PIN);
   Led _ledc = Led(LEDC_PIN);
-  bool _masterstate = 0;                       // the master state variable
-  bool _drystate = 0;                          // the dry state variable
+  bool _magnetState = 0;                       // the magnet state variable
+  bool _piezoState = 0;                        // the piezo state variable
 };
 
 #endif
