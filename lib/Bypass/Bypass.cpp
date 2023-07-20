@@ -6,24 +6,29 @@
 void Bypass::Init(void) {
     _relay.Init();
     _led.Init();
+
+    int buttonState = digitalRead(FTSW_PIN);
+
     _state = EEPROM.read(STATE_ADDRESS);
     if (_state > 1) _state = 1;
-    if (digitalRead(FTSW_PIN) == LOW) {
+
+    while (buttonState == LOW){
+    _setupstatus = 1;
+    SetupFlash();
+    buttonState = digitalRead(FTSW_PIN);
+    }
+
+    if (_setupstatus == 1) {
         _state = !_state;
     EEPROM.write(STATE_ADDRESS, _state);
+    }
        
-        for (int flash = 1; flash <= 4; ++flash) {
-        _led.write(HIGH);
-        delay(50);
-        _led.write(LOW);
-        delay(50);
-        }
-    }
-    if (_state == 0) {
+    if (_setupstatus == 0 && _state == 0) {
         _led.write(HIGH);
         delay(50);
         _led.write(LOW);
     }
+
     writeOutputs(_state);
     #ifdef __DEBUG__
         Serial.print("Init state: "); Serial.println(_state);
@@ -56,4 +61,24 @@ void Bypass::writeOutputs(uint8_t value) {
     _relay.write(value);        // use for mini relays   
 //    _relay.write(!value);    // use for large relays
     _led.write(value);                     
+}
+
+void Bypass::SetupFlash(void){
+    unsigned long currentMillis = millis();
+
+  if (currentMillis - _previousmillis >= _setupinterval) {
+    // save the last time you blinked the LED
+    _previousmillis = currentMillis;
+
+    // if the LED is off turn it on and vice-versa:
+    if (_ledstate == LOW) {
+      _ledstate = HIGH;
+    } else {
+      _ledstate = LOW;
+    }
+
+    // set the LED with the ledState of the variable:
+     _led.write(_ledstate);
+ 
+  }
 }

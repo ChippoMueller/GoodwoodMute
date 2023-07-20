@@ -18,6 +18,6 @@ enum EepromAddresses : uint8_t {
   STATE_ADDRESS,
 };
 
- #define __DEBUG__   // comment out when not using Uno
+// #define __DEBUG__   // comment out when not using Uno
 
 #endif
