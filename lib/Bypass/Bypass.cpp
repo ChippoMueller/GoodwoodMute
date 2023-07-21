@@ -8,32 +8,39 @@ void Bypass::Init(void) {
     _relayb.Init();
     _leda.Init();
     _ledb.Init();
+
+    int buttonAState = digitalRead(FTSWA_PIN);
+    int buttonBState = digitalRead(FTSWB_PIN);
+
     _masterstate = EEPROM.read(MASTER_STATE_ADDRESS);
     if (_masterstate > 1) _masterstate = 1;
-    if (digitalRead(FTSWA_PIN) == LOW) {
-        _masterstate = !_masterstate;
-    EEPROM.write(MASTER_STATE_ADDRESS, _masterstate);
-       
-        for (int flash = 1; flash <= 4; ++flash) {
-        _leda.write(HIGH);
-        delay(50);
-        _leda.write(LOW);
-        delay(50);
-        }
+
+    while (buttonAState == LOW){
+    _setupstatusA = 1;
+    SetupFlash(2);
+    buttonAState = digitalRead(FTSWA_PIN);
     }
+
+    if (_setupstatusA == 1) {
+        _masterstate = !_masterstate;
+        EEPROM.write(MASTER_STATE_ADDRESS, _masterstate);
+    }
+
     _drystate = EEPROM.read(DRY_STATE_ADDRESS);
     if (_drystate > 1) _drystate = 1;
-    if (digitalRead(FTSWB_PIN) == LOW) {
-        _drystate = !_drystate;
-    EEPROM.write(DRY_STATE_ADDRESS, _drystate);
-       
-        for (int flash = 1; flash <= 4; ++flash) {
-        _ledb.write(HIGH);
-        delay(50);
-        _ledb.write(LOW);
-        delay(50);
-        }
+
+    while (buttonBState == LOW){
+        _setupstatusB = 1;
+        SetupFlash(1);
+        buttonBState = digitalRead(FTSWB_PIN);
     }
+
+    if (_setupstatusB == 1) {
+        _drystate = !_drystate;
+        EEPROM.write(DRY_STATE_ADDRESS, _drystate);
+    }
+
+    if (_setupstatusA == 0 && _setupstatusB == 0){
     
     if (_drystate == 0 && _masterstate == 0) {
         _leda.write(HIGH);
@@ -54,10 +61,10 @@ void Bypass::Init(void) {
         delay(50);
         _leda.write(LOW);
     }
+}
     
-    writeOutputs(_masterstate);
-    writeOutputs(_drystate);
-
+    WriteOutputs(_masterstate);
+    WriteOutputs(_drystate);
 }
 
 /*!
@@ -66,7 +73,7 @@ void Bypass::Init(void) {
 void Bypass::ToggleMasterState(void) {
     _masterstate = !_masterstate;                  
 //    EEPROM.write(STATE_ADDRESS, _state);
-    writeOutputs(_masterstate);
+    WriteOutputs(_masterstate);
 //    #ifdef __DEBUG__
 //        Serial.print("master state: "); Serial.println(_masterstate);
 //    #endif
@@ -75,7 +82,7 @@ void Bypass::ToggleMasterState(void) {
  void Bypass::ToggleDryState(void) {
     _drystate = !_drystate;
 //    EEPROM.write(STATE_ADDRESS, _state);
-    writeOutputs(_drystate);
+    WriteOutputs(_drystate);
 //    #ifdef __DEBUG__
 //            Serial.print("dry state: "); Serial.println(_drystate);
 //    #endif
@@ -85,7 +92,7 @@ void Bypass::ToggleMasterState(void) {
     @brief Writes all of the outputs: Relay, LedA, LedB, LedC.
     @param value the value to write.
 */
-void Bypass::writeOutputs(uint8_t value) { 
+void Bypass::WriteOutputs(uint8_t value) { 
 
     if (_masterstate == 1){
         _relaya.write(1);
@@ -110,41 +117,25 @@ void Bypass::writeOutputs(uint8_t value) {
     }
 }
 
+void Bypass::SetupFlash(int led){
+    unsigned long currentMillis = millis();
 
-/*
-    if (_masterstate == 1) {
-//        _relaya.write(LOW);      // Big relays
-//        _relayb.write(LOW);      // Big relays
-        _relaya.write(HIGH);     // Mini relays
-        _relayb.write(HIGH);     // Mini relays
-        _leda.write(HIGH);
-        _ledb.write(LOW);
-    } 
+  if (currentMillis - _previousmillis >= _setupinterval) {
+    // save the last time you blinked the LED
+    _previousmillis = currentMillis;
 
-    if (_masterstate == 0) {
-//        _relaya.write(HIGH);    // Big relays
-//        _relayb.write(HIGH);    // Big relays
-        _relaya.write(LOW);     // Mini relays
-        _relayb.write(LOW);     // Mini relays
-        _leda.write(LOW);
-        _ledb.write(LOW);
-    } 
+    // if the LED is off turn it on and vice-versa:
+    if (_ledstate == LOW) {
+      _ledstate = HIGH;
+    } else {
+      _ledstate = LOW;
+    }
 
-    if (_drystate == 1) {
-        _ledb.write(HIGH);
-    } 
-
-    if (_drystate == 0) {
-        _ledb.write(LOW);
-    } 
-
-    if (_masterstate == 0 && _drystate == 1) {
-//        _relayb.write(LOW);      // Big relays
-        _relayb.write(HIGH);      // Mini relays
-    } 
-
-    if (_masterstate == 0 && _drystate == 0) {
-//        _relayb.write(HIGH);      // Big relays
-        _relayb.write(LOW);      // Mini relays
-    } 
-*/
+    // set the LED with the ledState of the variable:
+    if (led == 2){
+        _leda.write(_ledstate);
+    } else if (led == 1){
+        _ledb.write(_ledstate);
+    }
+  }
+}
