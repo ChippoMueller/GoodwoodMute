@@ -24,10 +24,8 @@ void loop(){
 
   ftsw.update();            // poll inputs every loop
 
-  if (ftsw.read() == LOW) {
-    bypass.Live();
-  } else {
-    bypass.Mute();
+  if (ftsw.fell()) {
+    bypass.ToggleState();
   }
 }
 
