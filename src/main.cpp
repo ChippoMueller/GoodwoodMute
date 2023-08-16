@@ -18,19 +18,16 @@ void setup() {
   ftsw.attach(FTSW_PIN);
   ftsw.interval(40);
 
-  bypass.Init();
-
 }
 
 void loop(){
 
   ftsw.update();            // poll inputs every loop
 
-  if (ftsw.fell()) {
-    #ifdef __DEBUG__
-        Serial.println("footswitch fell");
-    #endif
-    bypass.ToggleState();
+  if (ftsw.read() == LOW) {
+    bypass.Live();
+  } else {
+    bypass.Mute();
   }
 }
 
