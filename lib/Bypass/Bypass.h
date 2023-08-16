@@ -9,20 +9,14 @@
 
 class Bypass {
   public:
-  void Init(void);
-  void ToggleState(void);
-  void WriteState(bool value);
-  void writeOutputs(uint8_t value);
-  void SetupFlash(void);
+  void Bypassed(void);
+  void Active(void);
+  void writeOutputs(void);
 
   private:
   RelaySwitch _relay = RelaySwitch(RELAY_PIN);
   Led _led = Led(LED_PIN);
   bool _state = 0;                       // the master state variable
-  bool _setupstatus = 0;
-  bool _ledstate = 0;
-  unsigned long _previousmillis = 0;
-  const long _setupinterval = 75;
 };
 
 #endif

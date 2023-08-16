@@ -24,8 +24,10 @@ void loop(){
 
   ftsw.update();            // poll inputs every loop
 
-  if (ftsw.fell()) {
-    bypass.ToggleState();
+  if (ftsw.read() == HIGH) {
+    bypass.Bypassed();
+  } else {
+    bypass.Active();
   }
 }
 
