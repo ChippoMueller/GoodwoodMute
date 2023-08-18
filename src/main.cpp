@@ -18,6 +18,8 @@ void setup() {
   ftsw.attach(FTSW_PIN);
   ftsw.interval(40);
 
+  bypass.Init();
+
 }
 
 void loop(){
