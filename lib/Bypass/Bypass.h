@@ -10,10 +10,11 @@
 class Bypass {
   public:
   void Init(void);
-  void ToggleMasterState(void);
-  void ToggleDryState(void);
-  void WriteOutputs(uint8_t value);
-  void SetupFlash(int led);
+  void MasterLive(void);
+  void MasterMute(void);
+  void DryLive(void);
+  void DryMute(void);
+  void WriteOutputs(void);
 
   private:
   RelaySwitch _relaya = RelaySwitch(RELAYA_PIN);
@@ -24,10 +25,6 @@ class Bypass {
   bool _masterstate = 0;                       // the master state variable
   bool _drystate = 0;                          // the dry state variable
   bool _ledstate = 0;
-  bool _setupstatusA = 0;
-  bool _setupstatusB = 0;
-  unsigned long _previousmillis = 0;
-  const long _setupinterval = 75;
 };
 
 #endif

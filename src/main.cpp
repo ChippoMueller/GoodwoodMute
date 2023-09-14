@@ -31,18 +31,16 @@ void loop(){
   ftswa.update();            // poll inputs every loop
   ftswb.update();
 
-  if (ftswa.fell()) {
-    bypass.ToggleMasterState();
-//    #ifdef __DEBUG__
-//        Serial.println("footswitch a fell");
-//    #endif
+  if (ftswa.read() == HIGH) {
+    bypass.MasterLive();
+  } else {
+    bypass.MasterMute();
   }
 
-  if (ftswb.fell()) {
-    bypass.ToggleDryState();
-//    #ifdef __DEBUG__
-//        Serial.println("footswitch b fell");
-//    #endif
+  if (ftswb.read() == HIGH) {
+    bypass.DryLive();
+  } else {
+    bypass.DryMute();
   }
 }
 
