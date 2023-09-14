@@ -16,7 +16,8 @@ class Bypass {
   void SetupFlash(void);
 
   private:
-  RelaySwitch _relay = RelaySwitch(RELAY_PIN);
+  RelaySwitch _relaya = RelaySwitch(RELAYA_PIN);
+  RelaySwitch _relayb = RelaySwitch(RELAYB_PIN);
   Led _led = Led(LED_PIN);
   bool _state = 0;                       // the master state variable
   bool _setupstatus = 0;

@@ -4,7 +4,8 @@
     Loads the previous _state from EEPROM.
 */
 void Bypass::Init(void) {
-    _relay.Init();
+    _relaya.Init();
+    _relayb.Init();
     _led.Init();
 
     int buttonState = digitalRead(FTSW_PIN);
@@ -58,7 +59,8 @@ void Bypass::ToggleState(void) {
     @param value the value to write.
 */
 void Bypass::writeOutputs(uint8_t value) {
-    _relay.write(value);        // use for mini relays   
+    _relaya.write(value);        // use for mini relays 
+    _relayb.write(value);        // use for mini relays   
 //    _relay.write(!value);    // use for large relays
     _led.write(value);                     
 }
